@@ -4,6 +4,7 @@ import { ArcgisService } from './arcgis.service';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Subscription } from 'rxjs/Subscription';
+import { ServiceRequest } from './service-request';
 
 @Component({
   selector: 'app-root',
@@ -12,8 +13,10 @@ import { Subscription } from 'rxjs/Subscription';
 })
 export class AppComponent implements OnInit {
   private requestid = '358589';
-  chkStatusresults: Subscription;
-  buildings: string[];
+  private chkStatusresults: Subscription;
+  private buildings: string[];
+  private status: string;
+  private serviceRequest: ServiceRequest;
 
   title = 'app';
 
@@ -25,10 +28,11 @@ export class AppComponent implements OnInit {
     // this.buildings = this.
     // we should move this to another method that is only invoked when check status field is submitted
     this.cityworksservice.getServiceRequest(this.requestid).subscribe(ServiceRequest => {
-      console.log('status = ', ServiceRequest.Value.Status);
+      console.log('status = ', this.serviceRequest = ServiceRequest, this.status = ServiceRequest.Value.Status);
     }, err => {
     console.log('some error happened');
     });
+
 
 
   }
