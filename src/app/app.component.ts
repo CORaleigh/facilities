@@ -17,6 +17,7 @@ export class AppComponent implements OnInit {
   private buildings: Buildings;
   private status: string;
   private serviceRequest: ServiceRequest;
+  x;
 
   title = 'app';
 
