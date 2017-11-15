@@ -24,8 +24,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.buildings = this.arcgisservice.getFacilities();
-    // this.buildings = this.
     // we should move this to another method that is only invoked when check status field is submitted
     this.arcgisservice.getFacilities().subscribe(
       mobojumbo => {  // we're subscribing to the returned value of getFacilities and we can call it whatever we want.
