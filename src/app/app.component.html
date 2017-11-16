@@ -19,3 +19,11 @@
   </li>
 </ul>
 
+
+<form [formGroup]="customerForm" novalidate (ngSubmit)="save(customerForm.value, customerForm.valid)">
+  <input type="text" formControlName="firstname" placeholder="First Name">
+
+  <button type="submit" [disabled]="!customerForm.valid || submitted">Submit</button>
+  
+</form>
+

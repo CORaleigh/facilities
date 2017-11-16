@@ -5,6 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { ServiceRequest } from './service-request';
 import { Buildings } from './buildings';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -18,12 +19,28 @@ export class AppComponent implements OnInit {
   private status: string;
   private serviceRequest: ServiceRequest;
   x;
-
+  customerForm: FormGroup;
   title = 'app';
 
-  constructor(private cityworksservice: CityworksService, private arcgisservice: ArcgisService) {}
+  constructor(private fb: FormBuilder, private cityworksservice: CityworksService, private arcgisservice: ArcgisService) {}
 
+  createForm() {
+    this.customerForm = this.fb.group({
+      firstname: ['', Validators.required ],
+      lastname: ['', Validators.required ],
+      email: ['', Validators.email ],
+      phone: ['', Validators.required ],
+      details: ''
+    });
+  }
+
+  save(theform, isValid: boolean) {
+    console.log('inside save form', theform.firstname);
+  }
   ngOnInit(): void {
+
+    // initialize our form
+    this.createForm();
 
     // we should move this to another method that is only invoked when check status field is submitted
     this.arcgisservice.getFacilities().subscribe(

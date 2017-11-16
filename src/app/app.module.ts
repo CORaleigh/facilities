@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { CityworksService } from './cityworks.service';
 import { HttpClientModule } from '@angular/common/http';
 import { ArcgisService } from './arcgis.service';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -13,7 +14,8 @@ import { ArcgisService } from './arcgis.service';
   ],
   imports: [
     BrowserModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule
   ],
   providers: [ CityworksService, ArcgisService ],
   bootstrap: [AppComponent]
