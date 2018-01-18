@@ -31,7 +31,7 @@ export class MapComponent implements OnInit {
       'esri/views/MapView'
     ]).then(([Map, MapView]) => {
       const mapProperties: any = {
-        basemap: 'hybrid'
+        basemap: 'streets-navigation-vector'
       };
 
       const map: any = new Map(mapProperties);
@@ -40,7 +40,8 @@ export class MapComponent implements OnInit {
         // create the map view at the DOM element in this component
         container: this.mapViewEl.nativeElement,
         // supply additional options
-        center: [-12.287, -37.114],
+        // center: [-12.287, -37.114],
+        center: [-78.65, 35.8],
         zoom: 12,
         map // property shorthand for object literal
       };

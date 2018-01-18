@@ -11,7 +11,7 @@ export class CityworksService {
   constructor(private http: HttpClient) { }
 
   private getSRUrl = 'http://rhsoatstapp1.ci.raleigh.nc.us:8182/RaleighAPI/cityworks/getServiceRequest/';
-  private getProblemTypeUrl = 'http://rhsoatstapp1.ci.raleigh.nc.us:8182/RaleighAPI/cityworks/getSRProblemTypes/';
+  private getProblemTypeUrl = 'http://rhsoaprdapp1.ci.raleigh.nc.us:8183/RaleighAPI/cityworks/getSRProblemTypes/';
 
   getServiceRequest(requestid): Observable<ServiceRequest> {
 
