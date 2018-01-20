@@ -6,6 +6,8 @@ import { Buildings } from './buildings';
 import { CityworksService } from './cityworks.service';
 import { ArcgisService } from './arcgis.service';
 import { MapComponent } from './map/map.component';
+import { QuestionAnswer, Question } from './question-answer';
+
 
 @Component({
   selector: 'app-root',
@@ -13,12 +15,14 @@ import { MapComponent } from './map/map.component';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
+  questions: Question[];
+  dat: Value;
   @ViewChild(MapComponent) childMapComponent;
 
   coords: { x: number; y: number; };
   lindex: number;
   pindex: number;
-  formattedMessage: string;
+  problemSid: number;
   locations: Array<{
     descr: string, geometry: {
       x: number,
@@ -26,11 +30,8 @@ export class AppComponent implements OnInit {
     }
   }> = [];
   problems: Array<{ descr: string, problemSid: number }> = [];
-  title = 'app';
-  geometry: {
-    "x": -78.607868672773819,
-    "y": 35.866855800674266
-  };
+  question;
+  // questions: Array<{ question: string }> = [];
   public myForm: FormGroup; // our model driven form
   buildings: Buildings;
   // mapcomponent: MapComponent;
@@ -93,17 +94,24 @@ export class AppComponent implements OnInit {
     this.myForm.get('problemCode').valueChanges.subscribe(val => {
       this.pindex = this.problems.indexOf(val);
       console.log('sid is ', this.problems[this.pindex].problemSid);
+      this.problemSid = this.problems[this.pindex].problemSid;
+      this.cityworksservice.getQuestionAnswer(this.problemSid).subscribe(
+        data => {
+          this.questions = data.Value.Questions;
+           for (let i = 0; i < data.Value.Questions.length; i++) {
+            this.question = data.Value.Questions[i];
+            console.log('question = ', this.question);
+           }
+        },
+        err => {
+          console.log('some error happened');
+        });
     });
 
     this.myForm.get('loc').valueChanges.subscribe(val => {
       this.lindex = this.locations.indexOf(val);
-      // TODO: pass geometry to map
-      console.log('geometry is ', this.locations[this.lindex].geometry);
       this.coords = this.locations[this.lindex].geometry;
       this.childMapComponent.zoom(this.coords);
-
-      this.formattedMessage = `My name is ${val.descr}.`;
-      console.log('formattedMessage = ', this.formattedMessage);
     });
   }
 
@@ -115,7 +123,7 @@ export class AppComponent implements OnInit {
     console.log('model is ', model, isValid);
     console.log('stringified model', JSON.stringify(model));
 
-    // this._servicerequestService.createServiceRequest(model).subscribe(
+    // this.cityworksservice.createServiceRequest(model).subscribe(
     //   data => this.authResponse = data,
     //   err => console.error(err),
     //   () => {

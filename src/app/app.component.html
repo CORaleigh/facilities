@@ -3,7 +3,7 @@
     <mat-card>
         <mat-card-title>Select Facility</mat-card-title>
         <mat-card-content>
-            <mat-form-field >
+            <mat-form-field>
                 <mat-select formControlName="loc" required placeholder='Select a facility...'>
                     <mat-option *ngFor="let location of locations" [value]="location">{{location.descr}}</mat-option>
                 </mat-select>
@@ -15,9 +15,18 @@
         <mat-card-content>
             <mat-form-field>
                 <mat-select formControlName="problemCode" required placeholder='Select a problem...'>
-                        <mat-option *ngFor="let problem of problems" [value]="problem">{{problem.descr}}</mat-option>
-                    </mat-select>
+                    <mat-option *ngFor="let problem of problems" [value]="problem">{{problem.descr}}</mat-option>
+                </mat-select>
             </mat-form-field>
+        </mat-card-content>
+    </mat-card>
+    <mat-card>
+        <mat-card-title>Answer Questions</mat-card-title>
+        <mat-card-content>
+            <li *ngFor="let a of questions">
+                {{ a.Question }}
+            </li>
+            <!-- <span *ngFor="let question of questions" [value]="question">{{questions.question}}</span> -->
         </mat-card-content>
     </mat-card>
     <mat-card>
@@ -54,5 +63,5 @@
     </mat-card>
 </form>
 <mat-card>
-<app-map></app-map>
+    <app-map></app-map>
 </mat-card>

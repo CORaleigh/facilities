@@ -1,3 +1,4 @@
+import { QuestionAnswer } from './question-answer';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
@@ -12,6 +13,7 @@ export class CityworksService {
 
   private getSRUrl = 'http://rhsoatstapp1.ci.raleigh.nc.us:8182/RaleighAPI/cityworks/getServiceRequest/';
   private getProblemTypeUrl = 'http://rhsoaprdapp1.ci.raleigh.nc.us:8183/RaleighAPI/cityworks/getSRProblemTypes/';
+  private getQuestionAnswerUrl = 'http://rhsoaprdapp1.ci.raleigh.nc.us:8183/RaleighAPI/cityworks/getQuestionAnswer/';
 
   getServiceRequest(requestid): Observable<ServiceRequest> {
 
@@ -24,9 +26,13 @@ export class CityworksService {
   }
 
   getProblemTypes(): Observable<ProblemTypes> {
-
     const url = this.getProblemTypeUrl;
     return this.http.get<ProblemTypes>(url);
+  }
+
+  getQuestionAnswer(problemSid): Observable<QuestionAnswer> {
+    const url = this.getQuestionAnswerUrl + problemSid;
+    return this.http.get<QuestionAnswer>(url);
   }
 
 }
