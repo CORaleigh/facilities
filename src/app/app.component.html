@@ -23,9 +23,18 @@
     <mat-card>
         <mat-card-title>Answer Questions</mat-card-title>
         <mat-card-content>
-            <li *ngFor="let a of questions">
-                {{ a.Question }}
-            </li>
+
+            <span *ngFor="let q of questions">
+                {{ q.Question }}
+                <br>
+                <span *ngFor="let a of answers">
+                    <ng-container *ngIf="q.QuestionId === a.QuestionId">
+                        {{ a.Answer }}
+                        <br>
+                    </ng-container>
+                </span>
+                <br>
+            </span>
             <!-- <span *ngFor="let question of questions" [value]="question">{{questions.question}}</span> -->
         </mat-card-content>
     </mat-card>

@@ -6,7 +6,7 @@ import { Buildings } from './buildings';
 import { CityworksService } from './cityworks.service';
 import { ArcgisService } from './arcgis.service';
 import { MapComponent } from './map/map.component';
-import { QuestionAnswer, Question } from './question-answer';
+import { QuestionAnswer, Question, Answer } from './question-answer';
 
 
 @Component({
@@ -15,6 +15,9 @@ import { QuestionAnswer, Question } from './question-answer';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
+  answerFormat: string;
+  answer: Answer;
+  answers: Answer[];
   questions: Question[];
   dat: Value;
   @ViewChild(MapComponent) childMapComponent;
@@ -59,18 +62,18 @@ export class AppComponent implements OnInit {
         for (let i = 0; i < data.features.length; i++) {
           // console.log(data.features[i].attributes.LOCATION);
           if (data.features[i].attributes.WEBFORM === 'Y') {
-            this.locations.push({ descr: data.features[i].attributes.LOCATION, geometry: data.features[i].geometry} );
+            this.locations.push({ descr: data.features[i].attributes.LOCATION, geometry: data.features[i].geometry });
           }
         }
-        this.locations.sort(function(a, b) {
+        this.locations.sort(function (a, b) {
           if (a["descr"] < b["descr"]) return -1;
           if (a["descr"] > b["descr"]) return 1;
           return 0;
-      });
+        });
       },
       err => {
         console.log('some error happened');
-        this.locations.push({ descr: 'Error getting facilities list', geometry: {x: 0, y: 0} });
+        this.locations.push({ descr: 'Error getting facilities list', geometry: { x: 0, y: 0 } });
       }
     );
 
@@ -98,10 +101,22 @@ export class AppComponent implements OnInit {
       this.cityworksservice.getQuestionAnswer(this.problemSid).subscribe(
         data => {
           this.questions = data.Value.Questions;
-           for (let i = 0; i < data.Value.Questions.length; i++) {
-            this.question = data.Value.Questions[i];
+          console.log('questions = ', this.questions);
+          this.answers = data.Value.Answers;
+          console.log('answers = ', this.answers);
+
+          for (let i = 0; i < data.Value.Answers.length; i++) {
+            this.answerFormat = data.Value.Answers[i].AnswerFormat;
+            if (this.answerFormat === 'THIS TEXT') {
+              
+            }
             console.log('question = ', this.question);
-           }
+          }
+
+          //  for (let i = 0; i < data.Value.Questions.length; i++) {
+          //   this.question = data.Value.Questions[i];
+          //   console.log('question = ', this.question);
+          //  }
         },
         err => {
           console.log('some error happened');
