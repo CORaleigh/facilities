@@ -18,24 +18,28 @@
                     <mat-option *ngFor="let problem of problems" [value]="problem">{{problem.descr}}</mat-option>
                 </mat-select>
             </mat-form-field>
+            <mat-progress-bar *ngIf="showSpinner" class="app-spinner" mode="indeterminate" aria-label="Indeterminate progress-bar example"></mat-progress-bar>
         </mat-card-content>
     </mat-card>
     <mat-card>
         <mat-card-title>Answer Questions</mat-card-title>
         <mat-card-content>
 
-            <span *ngFor="let q of questions">
-                {{ q.Question }}
+            <span *ngFor="let q of questions; let i = index">
+                <ng-container *ngIf="i<1">
+                    {{q.Question}}
+                </ng-container>
                 <br>
-                <span *ngFor="let a of answers">
-                    <ng-container *ngIf="q.QuestionId === a.QuestionId">
-                        {{ a.Answer }}
-                        <br>
-                    </ng-container>
-                </span>
-                <br>
+                    <mat-form-field *ngIf="i < 1">
+                        <mat-select *ngIf="q.Question" required placeholder='Select an answer...'>
+                            <mat-option *ngFor="let a of answerPerQuestion" [value]="a">{{a}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <br>
+                <ng-container *ngIf="i < questions.length && i === 1">
+                    {{q.Question}}
+                </ng-container>
             </span>
-            <!-- <span *ngFor="let question of questions" [value]="question">{{questions.question}}</span> -->
         </mat-card-content>
     </mat-card>
     <mat-card>

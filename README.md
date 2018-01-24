@@ -1,27 +1,31 @@
-# MyesriLoader
+https://stackoverflow.com/questions/36388270/angular-2-how-to-apply-limit-to-ngfor
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.6.3.
 
-## Development server
+Issue 1
+progress spinner <mat-spinner [diameter]="70">
+https://github.com/angular/material2/issues/7653
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+ <mat-card-content>
+            <span *ngFor="let q of questions">
+                {{ q.Question }}
+                <br>
+                <span *ngFor="let a of freeTextAnswers; let i=index">
+                        
+                    <ng-container *ngIf="q.QuestionId === a.QuestionId">
+                        {{ a.Answer }}
+                        <textarea matInput placeholder="Enter Text" matTextareaAutosize matAutosizeMinRows="2" matAutosizeMaxRows="5"></textarea>
+                        <br>
+                    </ng-container>
+                    <ng-container *ngIf="q.QuestionId === a.QuestionId && a.AnswerFormat === 'THISTEXT'">
+                        <mat-select *ngIf="i<1" required placeholder='Select an option...'>
+                            <mat-option *ngFor="let x of answers">
+                                            {{ x.Answer }}
+                                        </mat-option>
+                        </mat-select>
+                        <br>
+                    </ng-container>
+                </span>
+                <br>
+            </span>
+            <!-- <span *ngFor="let question of questions" [value]="question">{{questions.question}}</span> -->
+        </mat-card-content>

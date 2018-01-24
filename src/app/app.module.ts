@@ -14,6 +14,8 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { ArcgisService } from './arcgis.service';
 import { CityworksService } from './cityworks.service';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+
 
 
 @NgModule({
@@ -35,7 +37,8 @@ import { CityworksService } from './cityworks.service';
     MatFormFieldModule,
     MatInputModule,
     MatOptionModule,
-    MatSelectModule
+    MatSelectModule,
+    MatProgressSpinnerModule,
   ],
   providers: [ArcgisService, CityworksService],
   bootstrap: [AppComponent]
