@@ -29,8 +29,9 @@ export class MapComponent implements OnInit {
   public ngOnInit() {
     return loadModules([
       'esri/Map',
-      'esri/views/MapView'
-    ]).then(([Map, MapView]) => {
+      //'esri/views/MapView'
+      'esri/views/SceneView'
+    ]).then(([Map, SceneView]) => { //replaced MapView with SceneView
       const mapProperties: any = {
         basemap: 'streets-navigation-vector'
       };
@@ -47,7 +48,7 @@ export class MapComponent implements OnInit {
         map // property shorthand for object literal
       };
 
-      this.mapView = new MapView(mapViewProperties);
+      this.mapView = new SceneView(mapViewProperties);//replaced MapView with SceneView
     })
       .catch(err => {
         console.log(err);
