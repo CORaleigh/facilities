@@ -8,6 +8,7 @@ import { ArcgisService } from './arcgis.service';
 import { MapComponent } from './map/map.component';
 import { QuestionAnswer, Question, Answer } from './question-answer';
 import { Subscription } from 'rxjs/Subscription';
+// import { AnswersToQuestions } from './answers-to-questions';
 
 
 @Component({
@@ -16,20 +17,30 @@ import { Subscription } from 'rxjs/Subscription';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  answerPerQuestion = [];
-  dateAnswers: Answer[];
-  yesNoAnswers: Answer[];
-  freeTextAnswers: Answer[];
-  thisTextAnswers: Answer[];
-  answerFormat: string;
-  public showSpinner: boolean = false;
-  answer: Answer;
-  answers: Answer[];
-  question: Question;
-  questions: Question[];
-  dat: Value;
+
+  spread: (Answer | Question)[];
+  nextQuestion: Answer[];
+
+  newArr: Array<{ questionId: number; question: string; answers: string }> = [];
+  // const uniqueProducts: any;
+
+
+  obj: [{ questionId: number; answersToQuestion: string; format: string; }];
+  questionObj: Array<{ questionId: number; questionsForAnswers: string; answer: string }> = [];
+
+  justAnswers = [];
   @ViewChild(MapComponent) childMapComponent;
 
+  // dateAnswers: Answer[];
+  // yesNoAnswers: Answer[];
+  // freeTextAnswers: Answer[];
+  // thisTextAnswers: Answer[];
+  answerFormat: string;
+  public showSpinner: boolean;
+  // answer: Answer;
+  answers: Answer[];
+  // question: Question;
+  questions: Question[];
   coords: { x: number; y: number; };
   lindex: number;
   pindex: number;
@@ -41,7 +52,15 @@ export class AppComponent implements OnInit {
     }
   }> = [];
   problems: Array<{ descr: string, problemSid: number }> = [];
-  
+  questionAnswers: Array<{
+    questionid: number,
+    question: string,
+    answersForQuestion: string[],
+    answerFormat: string
+  }>= [];
+  qna: QuestionAnswer;
+  qnaArray= [];
+
   // questions: Array<{ question: string }> = [];
   public myForm: FormGroup; // our model driven form
   buildings: Buildings;
@@ -62,7 +81,9 @@ export class AppComponent implements OnInit {
       comments: [''],
       callerComments: [''],
       loc: ['', [<any>Validators.required]],
-      problemCode: ['', [<any>Validators.required]]
+      problemCode: ['', [<any>Validators.required]],
+      yesno: ['', [<any>Validators.required]],
+      answera: ['', [<any>Validators.required]]
     });
 
     this.arcgisservice.getFacilities().subscribe(
@@ -101,47 +122,96 @@ export class AppComponent implements OnInit {
 
   onChanges(): void {
     this.myForm.get('problemCode').valueChanges.subscribe(val => {
+
       this.pindex = this.problems.indexOf(val);
       this.showLoadingSpinner();
-      console.log('sid is ', this.problems[this.pindex].problemSid);
+     // console.log('sid is ', this.problems[this.pindex].problemSid);
       this.problemSid = this.problems[this.pindex].problemSid;
+      // this.questionObj = []; // empties the array of questions each time a new problem code is selected.
       this.cityworksservice.getQuestionAnswer(this.problemSid).subscribe(
         data => {
           this.hideLoadingSpinner();
-
-          this.questions = data.Value.Questions;
-          console.log('questions - ',this.questions)
+          // this.AnswersToQuestions = data;
           this.answers = data.Value.Answers;
+          this.questions = data.Value.Questions;
+          console.log('questions - ', this.questions);
+          console.log('answers - ', this.answers);
 
-          this.answerPerQuestion.splice(0, this.answerPerQuestion.length);
+          this.spread = [...this.answers, ...this.questions];
+          console.log('spread', this.spread);
 
-          // newer ES6 for-of syntax - https://codecraft.tv/courses/angular/es6-typescript/for-of/
-          for (let q of this.questions) {
-            this.getCorrespondingAnswer(q.QuestionId, this.answers);
-            console.log('answerPerQuestion = ',this.answerPerQuestion);
-          }
+          for (const q of this.questions) {
+            for (const a of this.answers) {
+              if (a.QuestionId === q.QuestionId) {
+                console.log('and they is in fact a match', a.Answer);
 
-          // loop through all answers and break them up by type of answer
-          for (let i = 0; i < data.Value.Answers.length; i++) {
-            this.answerFormat = data.Value.Answers[i].AnswerFormat;
-            if (this.answerFormat === 'THISTEXT') {
-
-              this.thisTextAnswers = data.Value.Answers;
-            }
-            if (this.answerFormat === 'FREETEXT') {
-              this.freeTextAnswers = data.Value.Answers;
-            }
-            if (this.answerFormat === 'YES' || this.answerFormat === 'NO') {
-              this.yesNoAnswers = data.Value.Answers;
-            }
-            if (this.answerFormat === 'DATE') {
-              this.dateAnswers = data.Value.Answers;
+                this.newArr.push({questionId: q.QuestionId, question: q.Question, answers: a.Answer });
+                // this.newArr.push([...this.questions, ...this.answers]);
+                // this.newArr = [...this.questions, a.Answer];
+              }
             }
           }
-          //  for (let i = 0; i < data.Value.Questions.length; i++) {
-          //   this.question = data.Value.Questions[i];
-          //   console.log('question = ', this.question);
-          //  }
+          console.log('this new array = ', this.newArr);
+          // this.uniqueProducts = this.newArr.filter((questionId, i, newArr) => {
+          //   return this.newArr.indexOf(questionId) === i;
+          // });
+        
+          // this.uniqueProducts = this.newArr.filter(function(item, pos, self) {
+          //   return self.indexOf(item) === pos;
+          // });
+
+          var finalArr = [];
+          var ans = [];
+          this.newArr.filter(function(item) {
+            ans.push(item.answers);
+            var i = finalArr.findIndex(x => x.question == item.question);
+            if (i <= -1) {
+              finalArr.push({questionId: item.questionId, question: item.question, answers: ans});
+            }
+            return null;
+          });
+          console.log(finalArr);
+
+
+          // this.newArr.reduce((this.newArr) => {
+
+          // });
+
+          // for (const n of this.newArr) {
+          //    const newQ = n.QuestionId;
+          //    if (newQ ===)
+          // }
+          
+
+          // removes first element of spread array
+          // for (let s of this.spread) {
+          //   [s, ...this.newArr] = this.spread;
+          // }
+
+          // var initial = [0, 1];  
+          // var numbers1 = [...initial, 5, 7];  
+          // console.log(numbers1); // => [0, 1, 5, 7]  
+          // let numbers2 = [4, 8, ...initial];  
+          // console.log(numbers2); // => [4, 8, 0, 1]  
+
+          // remove 'b' element
+          // let x = {a: 1, b: 2, c: 3, z:26};
+          // let {b, ...y} = x;
+
+          // this.nextQuestion = this.answers.filter((AnswerId, a) =>
+          //     this.answers[a].AnswerId === this.questions[a].QuestionId);
+          //     console.log('next here', this.nextQuestion);
+
+          // for (let q of this.questions) {
+          //   console.log('q = ', q.QuestionId);
+          //   this.nextQuestion = this.answers.filter(
+          //     answer => answer.AnswerId === q.QuestionId
+          //   );
+          //   console.log(this.nextQuestion);
+          // }
+
+
+
         },
         err => {
           console.log('some error happened');
@@ -153,16 +223,10 @@ export class AppComponent implements OnInit {
       this.coords = this.locations[this.lindex].geometry;
       this.childMapComponent.zoom(this.coords);
     });
-  }
 
-  getCorrespondingAnswer(questionId: number, answers: Answer[]) {
-    for (let a of this.answers) {
-      if (a.QuestionId === questionId && a.AnswerFormat === 'THISTEXT') {
-        console.log('Answers for each question id = ',a.Answer);
-        this.answerPerQuestion.push(a.Answer);
-      }
-    }
-    
+    this.myForm.get('yesno').valueChanges.subscribe(val => {
+      console.log('get the value dude');
+    });
   }
 
   showLoadingSpinner() {

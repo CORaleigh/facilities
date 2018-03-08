@@ -8,7 +8,7 @@ import { AppComponent } from './app.component';
 import { MapComponent } from './map/map.component';
 
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatButtonModule, MatCheckboxModule, MatOptionModule, MatInputModule, MatSelectModule} from '@angular/material';
+import {MatButtonModule, MatCheckboxModule, MatOptionModule, MatInputModule, MatSelectModule, MatRadioModule} from '@angular/material';
 import {MatCardModule} from '@angular/material/card';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -39,6 +39,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     MatOptionModule,
     MatSelectModule,
     MatProgressSpinnerModule,
+    MatRadioModule
   ],
   providers: [ArcgisService, CityworksService],
   bootstrap: [AppComponent]

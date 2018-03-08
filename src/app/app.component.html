@@ -22,24 +22,44 @@
         </mat-card-content>
     </mat-card>
     <mat-card>
-        <mat-card-title>Answer Questions</mat-card-title>
+        <mat-card-title *ngIf="problemCode">Answer Questions</mat-card-title>
         <mat-card-content>
-
-            <span *ngFor="let q of questions; let i = index">
-                <ng-container *ngIf="i<1">
-                    {{q.Question}}
-                </ng-container>
-                <br>
-                    <mat-form-field *ngIf="i < 1">
-                        <mat-select *ngIf="q.Question" required placeholder='Select an answer...'>
-                            <mat-option *ngFor="let a of answerPerQuestion" [value]="a">{{a}}</mat-option>
-                        </mat-select>
-                    </mat-form-field>
+                <span *ngFor="let q of questionObj">
+                        <ng-container *ngIf="q.answer === 'YES'">
+                            {{q.questionsForAnswers}}
+                            <br>
+                        <mat-form-field>
+                                <mat-select formControlName="yesno" required placeholder='Select a problem...' [(value)]="selection">
+                                        <mat-option value="yes">Yes</mat-option>
+                                        <mat-option value="no">No</mat-option>
+                                      </mat-select>
+                        </mat-form-field>
+                            <br>
+                        </ng-container>
+                    </span>
+                    <span *ngFor="let q of questionObj">
+                            <ng-container *ngIf="q.answer.length > 1">
+                                {{q.questionsForAnswers}}
+                                <br>
+                            <mat-form-field>
+                                    <mat-select formControlName="answera" required placeholder='Select a problem...' [(value)]="selection">
+                                            <mat-option value="answera">{{q.answer}}</mat-option>
+                                          </mat-select>
+                            </mat-form-field>
+                                <br>
+                            </ng-container>
+                        </span>
+            <span *ngFor="let q of questionObj">
+                <ng-container *ngIf="q.answer === ''">
+                    {{q.questionsForAnswers}}
                     <br>
-                <ng-container *ngIf="i < questions.length && i === 1">
-                    {{q.Question}}
+                <mat-form-field>
+                    <textarea matInput></textarea>
+                </mat-form-field>
+                    <br>
                 </ng-container>
             </span>
+
         </mat-card-content>
     </mat-card>
     <mat-card>
