@@ -18,8 +18,10 @@ import { Subscription } from 'rxjs/Subscription';
 })
 export class AppComponent implements OnInit {
 
-  yesQuestions = [];
-  noQuestions = [];
+  chad: string;
+  selectionQuestions: any[];
+  yesNoQuestions = [];
+  answersForQuestion = [];
   // answersForQuestion: Array<{id: number, question: string, answers: string[]}>= [];
   textAreaQuestions = [];
   all: any;
@@ -126,21 +128,32 @@ export class AppComponent implements OnInit {
           this.questions = data.Value.Questions;
           console.log('All Answers', this.answers);
 
+          // Initialize arrays on new problem selection
           this.textAreaQuestions = [];
-          this.yesQuestions = [];
+          this.yesNoQuestions = [];
+          this.selectionQuestions = [];
+          this.answersForQuestion = [];
+          this.chad = '';
+
           this.answers.forEach((answer, aindex) => {
             this.questions.forEach((question, qindex) => {
               if (answer.QuestionId === question.QuestionId && answer.AnswerFormat === 'FREETEXT') {
                 this.textAreaQuestions.push({id: answer.QuestionId, question: question.Question});
-              }
+              } else
               if (answer.QuestionId === question.QuestionId && answer.AnswerFormat === 'YES') {
-                this.yesQuestions.push({id: answer.QuestionId, question: question.Question});
+                this.yesNoQuestions.push({id: answer.QuestionId, question: question.Question});
+              } else {
+                if (answer.QuestionId === question.QuestionId && answer.AnswerFormat !== 'NO') {
+                  this.answersForQuestion.push(answer.Answer);
+                  this.chad = question.Question;
+                  this.selectionQuestions.push({id: answer.QuestionId, question: question.Question, answers: this.answersForQuestion});
+                }
               }
             });
           });
           console.log('textAreaQuestions = ', this.textAreaQuestions);
-          console.log('yesQuestions = ', this.yesQuestions);
-          console.log('NoQuestions = ', this.noQuestions);
+          console.log('yesQuestions = ', this.yesNoQuestions);
+          console.log('selectionQuestions = ', this.selectionQuestions);
 
 
           // this.questions.forEach((item, index) => {
