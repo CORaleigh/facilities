@@ -18,53 +18,42 @@ import { Subscription } from 'rxjs/Subscription';
 })
 export class AppComponent implements OnInit {
 
-  spread: (Answer | Question)[];
-  nextQuestion: Answer[];
-
-  newArr: Array<{ questionId: number; question: string; answers: string }> = [];
-  // const uniqueProducts: any;
-
-
-  obj: [{ questionId: number; answersToQuestion: string; format: string; }];
-  questionObj: Array<{ questionId: number; questionsForAnswers: string; answer: string }> = [];
-
-  justAnswers = [];
+  yesQuestions = [];
+  noQuestions = [];
+  // answersForQuestion: Array<{id: number, question: string, answers: string[]}>= [];
+  textAreaQuestions = [];
+  all: any;
+  cleanQuestions = {};
   @ViewChild(MapComponent) childMapComponent;
 
-  // dateAnswers: Answer[];
-  // yesNoAnswers: Answer[];
-  // freeTextAnswers: Answer[];
-  // thisTextAnswers: Answer[];
-  answerFormat: string;
+  spread = [];
   public showSpinner: boolean;
-  // answer: Answer;
   answers: Answer[];
-  // question: Question;
   questions: Question[];
   coords: { x: number; y: number; };
   lindex: number;
   pindex: number;
   problemSid: number;
   locations: Array<{
-    descr: string, geometry: {
+    descr: string,
+    geometry: {
       x: number,
       y: number
     }
   }> = [];
-  problems: Array<{ descr: string, problemSid: number }> = [];
+  problems: Array<{
+    descr: string,
+    problemSid: number
+  }> = [];
   questionAnswers: Array<{
     questionid: number,
     question: string,
     answersForQuestion: string[],
     answerFormat: string
-  }>= [];
-  qna: QuestionAnswer;
-  qnaArray= [];
+  }> = [];
 
-  // questions: Array<{ question: string }> = [];
-  public myForm: FormGroup; // our model driven form
+  public myForm: FormGroup;
   buildings: Buildings;
-  // mapcomponent: MapComponent;
 
   constructor(private _fb: FormBuilder, private cityworksservice: CityworksService, private arcgisservice: ArcgisService) { }
 
@@ -83,7 +72,7 @@ export class AppComponent implements OnInit {
       loc: ['', [<any>Validators.required]],
       problemCode: ['', [<any>Validators.required]],
       yesno: ['', [<any>Validators.required]],
-      answera: ['', [<any>Validators.required]]
+      answers: ['', [<any>Validators.required]]
     });
 
     this.arcgisservice.getFacilities().subscribe(
@@ -94,8 +83,12 @@ export class AppComponent implements OnInit {
           }
         }
         this.locations.sort(function (a, b) {
-          if (a["descr"] < b["descr"]) return -1;
-          if (a["descr"] > b["descr"]) return 1;
+          if (a['descr'] < b['descr']) {
+            return -1;
+          }
+          if (a['descr'] > b['descr']) {
+            return 1;
+          }
           return 0;
         });
       },
@@ -125,93 +118,68 @@ export class AppComponent implements OnInit {
 
       this.pindex = this.problems.indexOf(val);
       this.showLoadingSpinner();
-     // console.log('sid is ', this.problems[this.pindex].problemSid);
       this.problemSid = this.problems[this.pindex].problemSid;
-      // this.questionObj = []; // empties the array of questions each time a new problem code is selected.
       this.cityworksservice.getQuestionAnswer(this.problemSid).subscribe(
         data => {
           this.hideLoadingSpinner();
-          // this.AnswersToQuestions = data;
           this.answers = data.Value.Answers;
           this.questions = data.Value.Questions;
-          console.log('questions - ', this.questions);
-          console.log('answers - ', this.answers);
+          console.log('All Answers', this.answers);
 
-          this.spread = [...this.answers, ...this.questions];
-          console.log('spread', this.spread);
-
-          for (const q of this.questions) {
-            for (const a of this.answers) {
-              if (a.QuestionId === q.QuestionId) {
-                console.log('and they is in fact a match', a.Answer);
-
-                this.newArr.push({questionId: q.QuestionId, question: q.Question, answers: a.Answer });
-                // this.newArr.push([...this.questions, ...this.answers]);
-                // this.newArr = [...this.questions, a.Answer];
+          this.textAreaQuestions = [];
+          this.yesQuestions = [];
+          this.answers.forEach((answer, aindex) => {
+            this.questions.forEach((question, qindex) => {
+              if (answer.QuestionId === question.QuestionId && answer.AnswerFormat === 'FREETEXT') {
+                this.textAreaQuestions.push({id: answer.QuestionId, question: question.Question});
               }
-            }
-          }
-          console.log('this new array = ', this.newArr);
-          // this.uniqueProducts = this.newArr.filter((questionId, i, newArr) => {
-          //   return this.newArr.indexOf(questionId) === i;
-          // });
-        
-          // this.uniqueProducts = this.newArr.filter(function(item, pos, self) {
-          //   return self.indexOf(item) === pos;
-          // });
-
-          var finalArr = [];
-          var ans = [];
-          this.newArr.filter(function(item) {
-            ans.push(item.answers);
-            var i = finalArr.findIndex(x => x.question == item.question);
-            if (i <= -1) {
-              finalArr.push({questionId: item.questionId, question: item.question, answers: ans});
-            }
-            return null;
+              if (answer.QuestionId === question.QuestionId && answer.AnswerFormat === 'YES') {
+                this.yesQuestions.push({id: answer.QuestionId, question: question.Question});
+              }
+            });
           });
-          console.log(finalArr);
+          console.log('textAreaQuestions = ', this.textAreaQuestions);
+          console.log('yesQuestions = ', this.yesQuestions);
+          console.log('NoQuestions = ', this.noQuestions);
 
 
-          // this.newArr.reduce((this.newArr) => {
-
+          // this.questions.forEach((item, index) => {
+          //   this.cleanQuestions.push(item.QuestionId)
           // });
 
-          // for (const n of this.newArr) {
-          //    const newQ = n.QuestionId;
-          //    if (newQ ===)
-          // }
-          
+          // mutate arrays to make html friendly for Cityworks q and a
+                  // this.spread = [...this.answers, ...this.questions];
+                  // console.log('spread', this.spread);
+                  // this.spread.forEach((item, index) => {
+                  //   if (item.QuestionSequence) {
+                  //     this.cleanQuestions = {id: item.QuestionId, question: item.Question};
+                  //     console.log('item Answer1 =', item.Answer);
 
-          // removes first element of spread array
-          // for (let s of this.spread) {
-          //   [s, ...this.newArr] = this.spread;
-          // }
+                  //   }
+                  //   console.log('cleansed', this.cleanQuestions);
+                  //   // console.log('q id = ', this.cleanQuestions['id']);
 
-          // var initial = [0, 1];  
-          // var numbers1 = [...initial, 5, 7];  
-          // console.log(numbers1); // => [0, 1, 5, 7]  
-          // let numbers2 = [4, 8, ...initial];  
-          // console.log(numbers2); // => [4, 8, 0, 1]  
+                  //   if (item.AnswerSequence) {
+                  //     console.log('item Answer2 =', item.Answer);
 
-          // remove 'b' element
-          // let x = {a: 1, b: 2, c: 3, z:26};
-          // let {b, ...y} = x;
-
-          // this.nextQuestion = this.answers.filter((AnswerId, a) =>
-          //     this.answers[a].AnswerId === this.questions[a].QuestionId);
-          //     console.log('next here', this.nextQuestion);
-
-          // for (let q of this.questions) {
-          //   console.log('q = ', q.QuestionId);
-          //   this.nextQuestion = this.answers.filter(
-          //     answer => answer.AnswerId === q.QuestionId
-          //   );
-          //   console.log(this.nextQuestion);
-          // }
-
-
-
+                  //     for (const value of Object.values(this.cleanQuestions)) {
+                  //       console.log('value = ', value);
+                  //       if (value === item.QuestionId) {
+                  //         console.log('were inside44444444444', item.Answer);
+                  //         this.all = {...this.cleanQuestions, answer: item.Answer};
+                  //       }
+                  //     }
+                  //     console.log('item Answer3 =', item.Answer);
+                  //     console.log('All = ', this.all);
+                  //     // this.cleanAnswers = {...this.cleanQuestions, item.}
+                  //   }
+                  //   // if (index < this.spread.length) {
+                  //   //   if (this.spread[index + 1].QuestionId === item.QuestionId) {
+                  //   //     console.log(item.Answer);
+                  //   //     console.log(index);
+                  //   //   }
+                  //   // }
+                  // });
         },
         err => {
           console.log('some error happened');

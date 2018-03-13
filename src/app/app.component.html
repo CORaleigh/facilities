@@ -1,100 +1,77 @@
 <form [formGroup]="myForm" novalidate (ngSubmit)="save(myForm.value, myForm.valid)">
 
-    <mat-card>
-        <mat-card-title>Select Facility</mat-card-title>
-        <mat-card-content>
-            <mat-form-field>
-                <mat-select formControlName="loc" required placeholder='Select a facility...'>
-                    <mat-option *ngFor="let location of locations" [value]="location">{{location.descr}}</mat-option>
-                </mat-select>
-            </mat-form-field>
-        </mat-card-content>
-    </mat-card>
-    <mat-card>
-        <mat-card-title>Select Problem</mat-card-title>
-        <mat-card-content>
-            <mat-form-field>
-                <mat-select formControlName="problemCode" required placeholder='Select a problem...'>
-                    <mat-option *ngFor="let problem of problems" [value]="problem">{{problem.descr}}</mat-option>
-                </mat-select>
-            </mat-form-field>
-            <mat-progress-bar *ngIf="showSpinner" class="app-spinner" mode="indeterminate" aria-label="Indeterminate progress-bar example"></mat-progress-bar>
-        </mat-card-content>
-    </mat-card>
-    <mat-card>
-        <mat-card-title *ngIf="problemCode">Answer Questions</mat-card-title>
-        <mat-card-content>
-                <span *ngFor="let q of questionObj">
-                        <ng-container *ngIf="q.answer === 'YES'">
-                            {{q.questionsForAnswers}}
-                            <br>
-                        <mat-form-field>
-                                <mat-select formControlName="yesno" required placeholder='Select a problem...' [(value)]="selection">
-                                        <mat-option value="yes">Yes</mat-option>
-                                        <mat-option value="no">No</mat-option>
-                                      </mat-select>
-                        </mat-form-field>
-                            <br>
-                        </ng-container>
-                    </span>
-                    <span *ngFor="let q of questionObj">
-                            <ng-container *ngIf="q.answer.length > 1">
-                                {{q.questionsForAnswers}}
-                                <br>
-                            <mat-form-field>
-                                    <mat-select formControlName="answera" required placeholder='Select a problem...' [(value)]="selection">
-                                            <mat-option value="answera">{{q.answer}}</mat-option>
-                                          </mat-select>
-                            </mat-form-field>
-                                <br>
-                            </ng-container>
-                        </span>
-            <span *ngFor="let q of questionObj">
-                <ng-container *ngIf="q.answer === ''">
-                    {{q.questionsForAnswers}}
-                    <br>
-                <mat-form-field>
-                    <textarea matInput></textarea>
-                </mat-form-field>
-                    <br>
-                </ng-container>
-            </span>
+  <mat-card>
+    <mat-card-title>Select Facility</mat-card-title>
+    <mat-card-content>
+      <mat-form-field>
+        <mat-select formControlName="loc" required placeholder='Select a facility...'>
+          <mat-option *ngFor="let location of locations" [value]="location">{{location.descr}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-card-content>
+  </mat-card>
+  <mat-card>
+    <mat-card-title>Select Problem</mat-card-title>
+    <mat-card-content>
+      <mat-form-field>
+        <mat-select formControlName="problemCode" required placeholder='Select a problem...'>
+          <mat-option *ngFor="let problem of problems" [value]="problem">{{problem.descr}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-progress-bar *ngIf="showSpinner" class="app-spinner" mode="indeterminate" aria-label="Indeterminate progress-bar example"></mat-progress-bar>
+    </mat-card-content>
+  </mat-card>
+  <mat-card>
+    <mat-card-title>Answer Questions</mat-card-title>
+    <mat-card-content *ngFor="let f of textAreaQuestions">
+      <ng-container>{{f.question}}</ng-container>
+      <br>
+      <mat-form-field>
+        <textarea matInput placeholder="Input an answer." formControlName="answers"></textarea>
+      </mat-form-field>
+    </mat-card-content>
+    <!-- enter yes no and multiple choice here -->
+    <mat-card-content *ngFor="let g of yesQuestions">
+      <ng-container>{{g.question}}</ng-container>
+      <br>
+      <mat-radio-group>
+        <mat-radio-button value="1">Yes</mat-radio-button>
+        <mat-radio-button value="2">No</mat-radio-button>
+      </mat-radio-group>
+    </mat-card-content>
+  </mat-card>
+  <mat-card>
+    <mat-card-title>Enter your contact information</mat-card-title>
 
-        </mat-card-content>
-    </mat-card>
-    <mat-card>
-        <mat-card-title>Enter your contact information</mat-card-title>
+    <mat-card-content>
+      <mat-form-field>
+        <input matInput type="text" formControlName="callerFirstName" placeholder="First Name">
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput type="text" formControlName="callerLastName" placeholder="Last Name">
+      </mat-form-field>
 
-        <mat-card-content>
-            <mat-form-field>
-                <input matInput type="text" formControlName="callerFirstName" placeholder="First Name">
-            </mat-form-field>
+      <mat-form-field>
+        <input matInput type="text" formControlName="callerEmail" placeholder="Email">
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput type="text" formControlName="callerWorkPhone" placeholder="Phone #" type="number">
+      </mat-form-field>
+      <mat-form-field>
+        <textarea matInput type="text" formControlName="comments" placeholder="Comments"></textarea>
+      </mat-form-field>
+    </mat-card-content>
+    <p>
+      <button mat-raised-button color="primary" type="submit" class="btn btn-success" [disabled]="!myForm.valid || submitted">Submit</button>
+    </p>
+    <p>
+      <mat-progress-bar *ngIf="!isDone && submitted" class="app-progress" mode="indeterminate" aria-label="Indeterminate progress-bar example"></mat-progress-bar>
+    </p>
 
-            <mat-form-field>
-                <input matInput type="text" formControlName="callerLastName" placeholder="Last Name">
-            </mat-form-field>
-
-            <mat-form-field>
-                <input matInput type="text" formControlName="callerEmail" placeholder="Email">
-            </mat-form-field>
-            <mat-form-field>
-                <input matInput type="text" formControlName="callerWorkPhone" placeholder="Phone #" type="number">
-            </mat-form-field>
-            <mat-form-field>
-                <textarea matInput type="text" formControlName="comments" placeholder="Comments"></textarea>
-            </mat-form-field>
-        </mat-card-content>
-        <p>
-            <button mat-raised-button color="primary" type="submit" class="btn btn-success" [disabled]="!myForm.valid || submitted">Submit</button>
-        </p>
-        <p>
-            <mat-progress-bar *ngIf="!isDone && submitted" class="app-progress" mode="indeterminate" aria-label="Indeterminate progress-bar example"></mat-progress-bar>
-        </p>
-
-        <div *ngIf="isDone && authResponse.requestId == ''">There was a problem generating your Service Request. Please try again. {{authResponse.message}}</div>
-        <div *ngIf="isDone && authResponse.requestId != ''">Your Service Request ID is {{authResponse.requestId | json}}</div>
-    </mat-card>
+    <div *ngIf="isDone && authResponse.requestId == ''">There was a problem generating your Service Request. Please try again. {{authResponse.message}}</div>
+    <div *ngIf="isDone && authResponse.requestId != ''">Your Service Request ID is {{authResponse.requestId | json}}</div>
+  </mat-card>
 </form>
 <mat-card>
-    <app-map></app-map>
+  <app-map></app-map>
 </mat-card>

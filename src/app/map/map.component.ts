@@ -32,7 +32,7 @@ export class MapComponent implements OnInit {
       'esri/views/MapView'
     ]).then(([Map, MapView]) => {
       const mapProperties: any = {
-        basemap: 'streets-navigation-vector'
+        basemap: 'topo'
       };
 
       const map: any = new Map(mapProperties);
