@@ -7,16 +7,15 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { MapComponent } from './map/map.component';
 
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatButtonModule, MatCheckboxModule, MatOptionModule, MatInputModule, MatSelectModule, MatRadioModule} from '@angular/material';
-import {MatCardModule} from '@angular/material/card';
-import {MatProgressBarModule} from '@angular/material/progress-bar';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatButtonModule, MatCheckboxModule, MatOptionModule, MatInputModule, MatSelectModule, MatRadioModule } from '@angular/material';
+import { MatCardModule } from '@angular/material/card';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { ArcgisService } from './arcgis.service';
 import { CityworksService } from './cityworks.service';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-
-
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 @NgModule({
   declarations: [
@@ -39,7 +38,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     MatOptionModule,
     MatSelectModule,
     MatProgressSpinnerModule,
-    MatRadioModule
+    MatRadioModule,
+    MatToolbarModule
   ],
   providers: [ArcgisService, CityworksService],
   bootstrap: [AppComponent]

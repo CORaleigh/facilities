@@ -2,6 +2,7 @@ import { Observable } from 'rxjs/Observable';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Buildings } from './buildings';
+import { Districts } from './districts';
 
 @Injectable()
 export class ArcgisService {
@@ -17,9 +18,11 @@ export class ArcgisService {
     return this.http.get<Buildings>(this.buildingsUrl);
   }
 
-  getDistricts(): string[] {
+  // This will give us the submitTo value if a Service Request answer has an associated 
+  // SubmitToFieldName and SubmitToLayerName
+  getDistricts(): Observable<Districts> {
     console.log('inside getDistricts Service');
-
+    // build query parameters BM_BL etc. then call service
     return;
   }
 

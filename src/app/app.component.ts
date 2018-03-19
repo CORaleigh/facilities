@@ -18,7 +18,7 @@ import { Subscription } from 'rxjs/Subscription';
 })
 export class AppComponent implements OnInit {
 
-  chad: string;
+  questionForMultipleChoice: string;
   selectionQuestions: any[];
   yesNoQuestions = [];
   answersForQuestion = [];
@@ -62,6 +62,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
 
     this.myForm = this._fb.group({
+      // formlocation: [''[<any>Validators.required]],
       callerFirstName: [''],
       callerLastName: ['', [<any>Validators.required]],
       callerCity: ['Raleigh'],
@@ -73,8 +74,8 @@ export class AppComponent implements OnInit {
       callerComments: [''],
       loc: ['', [<any>Validators.required]],
       problemCode: ['', [<any>Validators.required]],
-      yesno: ['', [<any>Validators.required]],
-      answers: ['', [<any>Validators.required]]
+      yesno: [''],
+      answers: ['']
     });
 
     this.arcgisservice.getFacilities().subscribe(
@@ -133,7 +134,7 @@ export class AppComponent implements OnInit {
           this.yesNoQuestions = [];
           this.selectionQuestions = [];
           this.answersForQuestion = [];
-          this.chad = '';
+          this.questionForMultipleChoice = '';
 
           this.answers.forEach((answer, aindex) => {
             this.questions.forEach((question, qindex) => {
@@ -145,7 +146,7 @@ export class AppComponent implements OnInit {
               } else {
                 if (answer.QuestionId === question.QuestionId && answer.AnswerFormat !== 'NO') {
                   this.answersForQuestion.push(answer.Answer);
-                  this.chad = question.Question;
+                  this.questionForMultipleChoice = question.Question;
                   this.selectionQuestions.push({id: answer.QuestionId, question: question.Question, answers: this.answersForQuestion});
                 }
               }
@@ -154,45 +155,6 @@ export class AppComponent implements OnInit {
           console.log('textAreaQuestions = ', this.textAreaQuestions);
           console.log('yesQuestions = ', this.yesNoQuestions);
           console.log('selectionQuestions = ', this.selectionQuestions);
-
-
-          // this.questions.forEach((item, index) => {
-          //   this.cleanQuestions.push(item.QuestionId)
-          // });
-
-          // mutate arrays to make html friendly for Cityworks q and a
-                  // this.spread = [...this.answers, ...this.questions];
-                  // console.log('spread', this.spread);
-                  // this.spread.forEach((item, index) => {
-                  //   if (item.QuestionSequence) {
-                  //     this.cleanQuestions = {id: item.QuestionId, question: item.Question};
-                  //     console.log('item Answer1 =', item.Answer);
-
-                  //   }
-                  //   console.log('cleansed', this.cleanQuestions);
-                  //   // console.log('q id = ', this.cleanQuestions['id']);
-
-                  //   if (item.AnswerSequence) {
-                  //     console.log('item Answer2 =', item.Answer);
-
-                  //     for (const value of Object.values(this.cleanQuestions)) {
-                  //       console.log('value = ', value);
-                  //       if (value === item.QuestionId) {
-                  //         console.log('were inside44444444444', item.Answer);
-                  //         this.all = {...this.cleanQuestions, answer: item.Answer};
-                  //       }
-                  //     }
-                  //     console.log('item Answer3 =', item.Answer);
-                  //     console.log('All = ', this.all);
-                  //     // this.cleanAnswers = {...this.cleanQuestions, item.}
-                  //   }
-                  //   // if (index < this.spread.length) {
-                  //   //   if (this.spread[index + 1].QuestionId === item.QuestionId) {
-                  //   //     console.log(item.Answer);
-                  //   //     console.log(index);
-                  //   //   }
-                  //   // }
-                  // });
         },
         err => {
           console.log('some error happened');
@@ -206,7 +168,7 @@ export class AppComponent implements OnInit {
     });
 
     this.myForm.get('yesno').valueChanges.subscribe(val => {
-      console.log('get the value dude');
+      console.log('get the value dude', val);
     });
   }
 
@@ -221,7 +183,9 @@ export class AppComponent implements OnInit {
   save(model: User, isValid: boolean) {
 
     model.address = this.myForm.get('callerEmail').value;
+    console.log('model address = ', model.address);
     model.problemSid = this.myForm.get('problemCode').value;
+    console.log('problemcode = ', model.problemSid);
 
     console.log('model is ', model, isValid);
     console.log('stringified model', JSON.stringify(model));
