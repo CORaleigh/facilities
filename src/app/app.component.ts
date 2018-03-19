@@ -1,7 +1,7 @@
-import { Value } from './service-request';
+import { Value, ServiceRequest } from './service-request';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { User } from './user';
+import { Request } from './request';
 import { Buildings } from './buildings';
 import { CityworksService } from './cityworks.service';
 import { ArcgisService } from './arcgis.service';
@@ -18,6 +18,8 @@ import { Subscription } from 'rxjs/Subscription';
 })
 export class AppComponent implements OnInit {
 
+  srCreated: boolean;
+  createSRResponse: any;
   questionForMultipleChoice: string;
   selectionQuestions: any[];
   yesNoQuestions = [];
@@ -76,6 +78,7 @@ export class AppComponent implements OnInit {
       problemCode: ['', [<any>Validators.required]],
       yesno: [''],
       answers: ['']
+
     });
 
     this.arcgisservice.getFacilities().subscribe(
@@ -180,26 +183,48 @@ export class AppComponent implements OnInit {
     this.showSpinner = false;
   }
 
-  save(model: User, isValid: boolean) {
+  save(formModel: any, isValid: boolean) {
 
-    model.address = this.myForm.get('callerEmail').value;
-    console.log('model address = ', model.address);
-    model.problemSid = this.myForm.get('problemCode').value;
-    console.log('problemcode = ', model.problemSid);
+    formModel.address = this.myForm.get('callerEmail').value;
+    console.log('model address = ', formModel.address);
+    formModel.problemCode = this.myForm.get('problemCode').value;
+    console.log('problemcode = ', formModel.problemCode.problemSid);
+    // build the request object and submit that to create SR, b/c the form model is slightly different than what Cityworks wants
+    const request = new Request();
+    request.ProblemSid = formModel.problemCode.problemSid;
+    request.Address = formModel.address;
+    request.CallerFirstName = formModel.callerFirstName;
+    request.CallerLastName = formModel.callerLastName;
+    request.CallerEmail = formModel.callerEmail;
+    request.CallerWorkPhone = formModel.callerWorkPhone;
+    
+    // callerFirstName: [''],
+    // callerLastName: ['', [<any>Validators.required]],
+    // callerCity: ['Raleigh'],
+    // callerState: ['NC'],
+    // callerZip: [''],
+    // callerEmail: ['', <any>Validators.email],
+    // callerWorkPhone: [''],
+    // comments: [''],
+    // callerComments: [''],
+    // loc: ['', [<any>Validators.required]],
+    // problemCode: ['', [<any>Validators.required]],
+    // yesno: [''],
+    // answers: ['']
 
-    console.log('model is ', model, isValid);
-    console.log('stringified model', JSON.stringify(model));
+    console.log('model is ', formModel, isValid);
+    console.log('stringified model', JSON.stringify(formModel));
 
-    // this.cityworksservice.createServiceRequest(model).subscribe(
-    //   data => this.authResponse = data,
-    //   err => console.error(err),
-    //   () => {
-    //     this.isDone = true;
-    //     if (this.authResponse.requestId === "") {
-    //       console.log('no ServiceRequest ID was returned');
-    //     }
-    //     console.log('this response is ', this.authResponse);
-    //   }
-    // );
+    this.cityworksservice.createServiceRequest(request).subscribe(
+      data => this.createSRResponse = data,
+      err => console.error(err),
+      () => {
+        this.srCreated = true;
+        if (this.createSRResponse.requestId === '') {
+          console.log('no ServiceRequest ID was returned');
+        }
+        console.log('this response is ', this.createSRResponse);
+      }
+    );
   }
 }
