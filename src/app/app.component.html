@@ -41,7 +41,7 @@
       <!-- <ng-container>{{g.question}}</ng-container> -->
       <br>
       <mat-form-field *ngIf="this.answersForQuestion.length > 0">
-        <mat-select formControlName="answers" placeholder="Select One">
+        <mat-select formControlName="formAnswers" placeholder="Select One">
           <mat-option *ngFor="let z of answersForQuestion" [value]="z">
             <ng-container>{{ z }}</ng-container>
           </mat-option>
@@ -64,7 +64,7 @@
       <ng-container>{{f.question}}</ng-container>
       <br>
       <mat-form-field>
-        <textarea matInput placeholder="Input an answer." formControlName="answers"></textarea>
+        <textarea matInput placeholder="Input an answer." formControlName="formAnswers"></textarea>
       </mat-form-field>
     </mat-card-content>
   </mat-card>

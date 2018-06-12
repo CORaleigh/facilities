@@ -1,6 +1,6 @@
 
 export class ServiceRequest {
-    Value: Value;
+    SRValue: SRValue;
     Status: number;
     Message?: any;
     ErrorMessages: any[];
@@ -8,8 +8,7 @@ export class ServiceRequest {
     SuccessMessages: any[];
 }
 
-export class Value {
-
+export class SRValue {
     RequestId: number;
     DomainId: number;
     ProjectSid: number;

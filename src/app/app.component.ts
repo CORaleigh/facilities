@@ -1,7 +1,7 @@
 import { Value, ServiceRequest } from './service-request';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Request } from './request';
+import { FormGroup, FormBuilder, Validators, FormArray, FormControl } from '@angular/forms';
+import { CityworksRequest, AnswerCHF } from './cityworks-request';
 import { Buildings } from './buildings';
 import { CityworksService } from './cityworks.service';
 import { ArcgisService } from './arcgis.service';
@@ -18,6 +18,8 @@ import { Subscription } from 'rxjs/Subscription';
 })
 export class AppComponent implements OnInit {
 
+  // requestObj: Request;
+  answerCHF: AnswerCHF;
   srCreated: boolean;
   createSRResponse: any;
   questionForMultipleChoice: string;
@@ -32,7 +34,7 @@ export class AppComponent implements OnInit {
 
   spread = [];
   public showSpinner: boolean;
-  answers: Answer[];
+  answers: Answer[] = [];
   questions: Question[];
   coords: { x: number; y: number; };
   lindex: number;
@@ -63,6 +65,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
 
+
     this.myForm = this._fb.group({
       // formlocation: [''[<any>Validators.required]],
       callerFirstName: [''],
@@ -77,7 +80,8 @@ export class AppComponent implements OnInit {
       loc: ['', [<any>Validators.required]],
       problemCode: ['', [<any>Validators.required]],
       yesno: [''],
-      answers: ['']
+      answers: this._fb.array([this.createAnswer()]),
+      questions: this._fb.array([this.createQuestion()])
 
     });
 
@@ -104,6 +108,7 @@ export class AppComponent implements OnInit {
       }
     );
 
+    // TODO: limit problem types for F&O only, not entire ES domain
     this.cityworksservice.getProblemTypes().subscribe(
       data => {
         for (let i = 0; i < data.Value.length; i++) {
@@ -117,6 +122,18 @@ export class AppComponent implements OnInit {
       }
     );
     this.onChanges();
+  }
+
+  createAnswer(): FormGroup {
+    return this._fb.group({
+      name: ''
+    });
+  }
+
+  createQuestion(): FormGroup {
+    return this._fb.group({
+      name: ''
+    });
   }
 
   onChanges(): void {
@@ -142,17 +159,21 @@ export class AppComponent implements OnInit {
           this.answers.forEach((answer, aindex) => {
             this.questions.forEach((question, qindex) => {
               if (answer.QuestionId === question.QuestionId && answer.AnswerFormat === 'FREETEXT') {
-                this.textAreaQuestions.push({id: answer.QuestionId, question: question.Question});
+                this.textAreaQuestions.push({ id: answer.QuestionId, question: question.Question });
+                // this.requestObj.Answers.push({AnswerId: answer.QuestionId, AnswerValue: answer.Answer});
+                // cant do this b/c need to get answer from the form
               } else
-              if (answer.QuestionId === question.QuestionId && answer.AnswerFormat === 'YES') {
-                this.yesNoQuestions.push({id: answer.QuestionId, question: question.Question});
-              } else {
-                if (answer.QuestionId === question.QuestionId && answer.AnswerFormat !== 'NO') {
-                  this.answersForQuestion.push(answer.Answer);
-                  this.questionForMultipleChoice = question.Question;
-                  this.selectionQuestions.push({id: answer.QuestionId, question: question.Question, answers: this.answersForQuestion});
+                if (answer.QuestionId === question.QuestionId && answer.AnswerFormat === 'YES') {
+                  this.yesNoQuestions.push({ id: answer.QuestionId, question: question.Question });
+                  // this.requestObj.Answers.push({AnswerId: answer.QuestionId, AnswerValue: answer.Answer});
+                } else {
+                  if (answer.QuestionId === question.QuestionId && answer.AnswerFormat !== 'NO') {
+                    this.answersForQuestion.push(answer.Answer);
+                    // this.requestObj.Answers.push({AnswerId: answer.QuestionId, AnswerValue: answer.Answer});
+                    this.questionForMultipleChoice = question.Question;
+                    this.selectionQuestions.push({ id: answer.QuestionId, question: question.Question, answers: this.answersForQuestion });
+                  }
                 }
-              }
             });
           });
           console.log('textAreaQuestions = ', this.textAreaQuestions);
@@ -185,19 +206,34 @@ export class AppComponent implements OnInit {
 
   save(formModel: any, isValid: boolean) {
 
-    formModel.address = this.myForm.get('callerEmail').value;
-    console.log('model address = ', formModel.address);
+    console.log('formModel.problemCode.problemSid = ', formModel.problemCode.problemSid);
+    const requestObj = Object.create(CityworksRequest);
+
+    requestObj.ProblemSid = formModel.problemCode.problemSid;
+    console.log('problemSid = ', requestObj.ProblemSid);
+    console.log('formModel.answers = ', formModel.answers);
+    this.textAreaQuestions.forEach((textanswer) => {
+      console.log('textanswer ', textanswer);
+      // requestObj.Answers.AnswerCHF.push(AnswerId: textanswer.id, AnswerValue: )
+      // this.requestObj.Answers.push({AnswerId: textanswer.QuestionId, AnswerValue: textanswer.Answer});
+    });
+    requestObj.CallerEmail = formModel.callerEmail;
+    console.log('formModel email = ', formModel.callerEmail);
+    console.log('requestObj email = ', requestObj.CallerEmail);
+
+    formModel.callerEmail = this.myForm.get('callerEmail').value;
+    console.log('model address = ', formModel.callerEmail);
     formModel.problemCode = this.myForm.get('problemCode').value;
     console.log('problemcode = ', formModel.problemCode.problemSid);
     // build the request object and submit that to create SR, b/c the form model is slightly different than what Cityworks wants
-    const request = new Request();
-    request.ProblemSid = formModel.problemCode.problemSid;
-    request.Address = formModel.address;
-    request.CallerFirstName = formModel.callerFirstName;
-    request.CallerLastName = formModel.callerLastName;
-    request.CallerEmail = formModel.callerEmail;
-    request.CallerWorkPhone = formModel.callerWorkPhone;
+    // this.requestObj.ProblemSid = formModel.problemCode.problemSid;
     
+    requestObj.Address = formModel.address;
+    requestObj.CallerFirstName = formModel.callerFirstName;
+    requestObj.CallerLastName = formModel.callerLastName;
+    requestObj.CallerEmail = formModel.callerEmail;
+    requestObj.CallerWorkPhone = formModel.callerWorkPhone;
+
     // callerFirstName: [''],
     // callerLastName: ['', [<any>Validators.required]],
     // callerCity: ['Raleigh'],
@@ -212,10 +248,12 @@ export class AppComponent implements OnInit {
     // yesno: [''],
     // answers: ['']
 
-    console.log('model is ', formModel, isValid);
-    console.log('stringified model', JSON.stringify(formModel));
+    // console.log('model is ', formModel, isValid);
+    // console.log('stringified model', JSON.stringify(formModel));
 
-    this.cityworksservice.createServiceRequest(request).subscribe(
+    console.log('requestObject = ', requestObj);
+
+    this.cityworksservice.createServiceRequest(requestObj).subscribe(
       data => this.createSRResponse = data,
       err => console.error(err),
       () => {
