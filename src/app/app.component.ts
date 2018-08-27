@@ -18,6 +18,7 @@ import { Subscription } from 'rxjs/Subscription';
 })
 export class AppComponent implements OnInit {
 
+  textquestions: any[] = [];
   // requestObj: Request;
   answerCHF: AnswerCHF;
   srCreated: boolean;
@@ -34,7 +35,7 @@ export class AppComponent implements OnInit {
 
   spread = [];
   public showSpinner: boolean;
-  answers: Answer[] = [];
+  answers: any[];
   questions: Question[];
   coords: { x: number; y: number; };
   lindex: number;
@@ -60,11 +61,11 @@ export class AppComponent implements OnInit {
 
   public myForm: FormGroup;
   buildings: Buildings;
+  formanswers: any[] = [];
 
   constructor(private _fb: FormBuilder, private cityworksservice: CityworksService, private arcgisservice: ArcgisService) { }
 
   ngOnInit() {
-
 
     this.myForm = this._fb.group({
       // formlocation: [''[<any>Validators.required]],
@@ -80,9 +81,8 @@ export class AppComponent implements OnInit {
       loc: ['', [<any>Validators.required]],
       problemCode: ['', [<any>Validators.required]],
       yesno: [''],
-      answers: this._fb.array([this.createAnswer()]),
-      questions: this._fb.array([this.createQuestion()])
-
+      textquestions: this._fb.array([this.createQuestion()]),
+      formanswers: this._fb.array([this.createAnswer()])
     });
 
     this.arcgisservice.getFacilities().subscribe(
@@ -124,17 +124,23 @@ export class AppComponent implements OnInit {
     this.onChanges();
   }
 
+  createQuestion(): FormGroup {
+    return this._fb.group({
+      id: '',
+      question: ''
+    });
+  }
+
   createAnswer(): FormGroup {
     return this._fb.group({
       name: ''
     });
   }
 
-  createQuestion(): FormGroup {
-    return this._fb.group({
-      name: ''
-    });
-  }
+  // addItem(): void {
+  //   this.answers = this.myForm.get('items') as FormArray;
+  //   this.items.push(this.createItem());
+  // }
 
   onChanges(): void {
     this.myForm.get('problemCode').valueChanges.subscribe(val => {
@@ -160,6 +166,7 @@ export class AppComponent implements OnInit {
             this.questions.forEach((question, qindex) => {
               if (answer.QuestionId === question.QuestionId && answer.AnswerFormat === 'FREETEXT') {
                 this.textAreaQuestions.push({ id: answer.QuestionId, question: question.Question });
+                this.textquestions.push(this.textAreaQuestions);
                 // this.requestObj.Answers.push({AnswerId: answer.QuestionId, AnswerValue: answer.Answer});
                 // cant do this b/c need to get answer from the form
               } else
@@ -177,6 +184,8 @@ export class AppComponent implements OnInit {
             });
           });
           console.log('textAreaQuestions = ', this.textAreaQuestions);
+          // this.items = this.orderForm.get('items') as FormArray;
+          this.formanswers.push(this.createAnswer());
           console.log('yesQuestions = ', this.yesNoQuestions);
           console.log('selectionQuestions = ', this.selectionQuestions);
         },
@@ -227,7 +236,7 @@ export class AppComponent implements OnInit {
     console.log('problemcode = ', formModel.problemCode.problemSid);
     // build the request object and submit that to create SR, b/c the form model is slightly different than what Cityworks wants
     // this.requestObj.ProblemSid = formModel.problemCode.problemSid;
-    
+
     requestObj.Address = formModel.address;
     requestObj.CallerFirstName = formModel.callerFirstName;
     requestObj.CallerLastName = formModel.callerLastName;
